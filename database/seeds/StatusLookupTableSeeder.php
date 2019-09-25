@@ -17,5 +17,6 @@ class StatusLookupTableSeeder extends Seeder
         StatusLookup::create(['status_lookup_name' => 'Pending',  'is_active' => '1' ]);
         StatusLookup::create(['status_lookup_name' => 'Approved', 'is_active' => '1' ]);
         StatusLookup::create(['status_lookup_name' => 'Declined', 'is_active' => '1' ]);
+        StatusLookup::create(['status_lookup_name' => 'Inactive', 'is_active' => '1' ]);
     }
 }

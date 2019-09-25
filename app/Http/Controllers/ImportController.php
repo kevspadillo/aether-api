@@ -28,10 +28,14 @@ class ImportController extends Controller
      */
     public function __construct(
         User                $User,
-        MemberTransactions  $MemberTransactions
+        MemberTransactions  $MemberTransactions,
+        ShareTransactions   $ShareTransactions,
+        SavingsTransactions $SavingsTransactions
     ) {
         $this->User                = $User;
         $this->MemberTransactions  = $MemberTransactions;
+        $this->ShareTransactions   = $ShareTransactions;
+        $this->SavingsTransactions = $SavingsTransactions;
     }
 
     public function store(Request $Request)
@@ -135,18 +139,17 @@ class ImportController extends Controller
 
     public function saveTransaction(Request $Request)
     {
-
         $user = JWTAuth::parseToken()->authenticate();
 
         $data = $Request->all();
 
-        $MemberLoanTransactions = new MemberTransactions();
-        $MemberLoanTransactions->transaction_type = 'LOAN';
-        $MemberLoanTransactions->is_posted = 0;
-        $MemberLoanTransactions->user_id = $user->user_id;
-        $MemberLoanTransactions->save();
+        // $MemberLoanTransactions = new MemberTransactions();
+        // $MemberLoanTransactions->transaction_type = 'LOAN';
+        // $MemberLoanTransactions->is_posted = 0;
+        // $MemberLoanTransactions->user_id = $user->user_id;
+        // $MemberLoanTransactions->save();
 
-        $loansTransactionId = $MemberLoanTransactions->member_transaction_id;
+        // $loansTransactionId = $MemberLoanTransactions->member_transaction_id;
 
         $MemberShareTransactions = new MemberTransactions();
         $MemberShareTransactions->transaction_type = 'SHARE';
@@ -174,7 +177,7 @@ class ImportController extends Controller
 
                 $date = explode('|', $transactionDate);
 
-                $shares[] = [
+                $shares[$transactionDate] = [
                     'member_transaction_id' => $shareTransactionId,
                     'member_id'             => $memberId,
                     'transaction_date'      => $date[1],
@@ -183,7 +186,7 @@ class ImportController extends Controller
                     'share'                 => $transaction['shares']['share'],
                 ];
 
-                $savings[] = [ 
+                $savings[$transactionDate] = [ 
                     'member_id'              => $memberId,
                     'member_transaction_id'  => $savingsTransactionId,
                     'reference_id'           => $transaction['savings']['reference_id'],
@@ -193,23 +196,24 @@ class ImportController extends Controller
                     'savings'                => $transaction['savings']['savings']
                 ];
 
-                $loans[] = [
-                    'member_id'             => $memberId,
-                    'member_transaction_id' => $loansTransactionId,
-                    'reference_id'          => $transaction['loans']['reference_id'],
-                    'transaction_date'      => $date[1],
-                    'loans_receivable'      => $transaction['loans']['loans_receivable'],
-                    'interest_on_loan'      => $transaction['loans']['interest_on_loans'],
-                    'penalty'               => $transaction['loans']['penalty'],
-                    'remaining_loan'        => $transaction['loans']['remaining_loan'],
-                    'total_interest'        => $transaction['loans']['total_interest'],
-                    'total_penalty'         => $transaction['loans']['total_penalty'],
-                ];
+                // $loans[$transactionDate] = [
+                //     'member_id'             => $memberId,
+                //     'member_transaction_id' => $loansTransactionId,
+                //     'reference_id'          => $transaction['loans']['reference_id'],
+                //     'transaction_date'      => $date[1],
+                //     'loans_receivable'      => $transaction['loans']['loans_receivable'],
+                //     'interest_on_loan'      => $transaction['loans']['interest_on_loans'],
+                //     'penalty'               => $transaction['loans']['penalty'],
+                //     'remaining_loan'        => $transaction['loans']['remaining_loan'],
+                //     'total_interest'        => $transaction['loans']['total_interest'],
+                //     'total_penalty'         => $transaction['loans']['total_penalty'],
+                // ];
             }
-
-            ShareTransactions::insert($shares);
-            SavingsTransactions::insert($savings);
-            LoanTransactions::insert($loans);
+            
+            $this->ShareTransactions->saveImportedShareTransactions($shares, $memberId);
+            $this->SavingsTransactions->saveImportedSavingsTransactions($savings, $memberId);
+            // SavingsTransactions::insert($savings);
+            // LoanTransactions::insert($loans);
         }
         return response()->json(['message' => 'Transactions Saved.']);
     }

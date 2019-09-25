@@ -9,6 +9,7 @@ class StatusLookup extends Model
     const PENDING  = 1;
     const APPROVED = 2;
     const DECLINED = 3;
+    const INACTIVE = 4;
 
     protected $table = 'status_lookup';
 

@@ -31,15 +31,33 @@ Route::put('member/{id}/delete', 'UserController@deleteMember');
 Route::put('member/{id}/disapprove', 'UserController@disapproveMember');
 
 /**
- * Share Routes
+ * Admin Share Routes
  */
+Route::resource('admin/shares', 'Admin\ShareController');
+Route::put('admin/shares/{id}/approve', 'Admin\ShareController@approve');
+Route::put('admin/shares/{id}/disapprove', 'Admin\ShareController@disapprove');
+Route::resource('admin/share-transactions', 'Admin\ShareTransactionsController');
 
-Route::resource('shares', 'ShareController');
-Route::resource('member-shares', 'MemberShareController');
-Route::get('member-shares/{id}/summary', 'MemberShareController@summary');
+/**
+ * Savings Routes
+ */
+Route::resource('admin/savings', 'Admin\SavingsController');
+Route::put('admin/savings/{id}/approve', 'Admin\SavingsController@approve');
+Route::put('admin/savings/{id}/disapprove', 'Admin\SavingsController@disapprove');
+Route::resource('admin/savings-transactions', 'Admin\SavingsTransactionsController');
 
-Route::resource('import', 'ImportController');
-Route::post('save-transaction', 'ImportController@saveTransaction');
+/**
+ * Member Share Routes
+ */
+Route::resource('member/shares', 'Member\ShareController');
+Route::resource('member/{id}/share-transactions', 'Member\ShareTransactionController');
+Route::resource('member/{id}/savings-transactions', 'Member\SavingsTransactionController');
+Route::get('member/shares/{id}/summary', 'Member\ShareController@summary');
 
+/**
+ * Member Savings Routes
+ */
+Route::resource('member/savings', 'Member\SavingsController');
 
-Route::resource('share-transactions', 'Admin\ShareTransactionsController');
+// Route::resource('import', 'ImportController');
+// Route::post('save-transaction', 'ImportController@saveTransaction');

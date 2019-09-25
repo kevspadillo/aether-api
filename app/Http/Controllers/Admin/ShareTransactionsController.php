@@ -29,7 +29,7 @@ class ShareTransactionsController extends Controller
 
     public function index()
     {
-        return response()->json(['data' => $this->MemberTransactions->getShareTransactions()]);
+        return response()->json(['data' => $this->MemberTransactions->getMemberTransactions('SHARE')]);
     }
 
     public function show($shareTransactionId)
@@ -39,12 +39,11 @@ class ShareTransactionsController extends Controller
         $shareTransactionData = $this->ShareTransactions->getShareTransactions($shareTransactionId);
 
         $shareTransactions = [];
+        $memberIds = [];
 
         foreach ($shareTransactionData as $shareTransaction) {
             
             $shareTransactions[$shareTransaction->member_id]['transactions'][] = $shareTransaction;
-
-
             $memberIds[] = $shareTransaction->member_id;
         }
 
@@ -70,10 +69,6 @@ class ShareTransactionsController extends Controller
         }
 
         $user = JWTAuth::parseToken()->authenticate();
-
-        MemberTransactions::where('is_posted', '=', 1)
-            ->where('transaction_type', '=', 'SHARE')
-            ->update(['is_posted' => 2]);
 
         $MemberTransaction->is_posted = 1;
         $MemberTransaction->posted_by_user_id = $user->user_id;

@@ -33,7 +33,7 @@ class MemberTransactions extends Model
      */
     public $timestamps = false;
 
-    public function getShareTransactions()
+    public function getMemberTransactions($transactionType)
     {
         $query = DB::table('member_transactions');
         $query->select(
@@ -43,7 +43,7 @@ class MemberTransactions extends Model
             );
         $query->join('users', 'users.user_id', '=', 'member_transactions.user_id');
         $query->leftJoin('users as poster', 'poster.user_id', '=', 'member_transactions.posted_by_user_id');
-        $query->where('member_transactions.transaction_type', '=', 'SHARE');
+        $query->where('member_transactions.transaction_type', '=', $transactionType);
         $query->orderBy('member_transactions.created_datetime', 'DESC');
 
         return $query->get();

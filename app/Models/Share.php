@@ -41,33 +41,39 @@ class Share extends Model
      */
     public $timestamps = false;
 
-    public function getAllShares($memberId = null)
+    public function getAllShares($memberId = null, $shareId = null)
     {
         $query = DB::table('shares')
             ->select(
                 'shares.*',
                 'status_lookup.*',
                 DB::raw('(shares.rate_per_share * shares.number_of_shares) as total_amount'),
-                DB::raw('member.firstname as member_firstname'),
-                DB::raw('member.middlename as member_middlename'),
-                DB::raw('member.lastname as member_lastname'),
-                DB::raw('approver.firstname as approver_firstname'),
-                DB::raw('approver.middlename as approver_middlename'),
-                DB::raw('approver.lastname as approver_lastname'),
-                DB::raw('decliner.firstname as decliner_firstname'),
-                DB::raw('decliner.middlename as decliner_middlename'),
-                DB::raw('decliner.lastname as decliner_lastname'),
+                DB::raw('CONCAT(member.firstname, " ", member.lastname) as member_name'),
+                DB::raw('CONCAT(approver.firstname, " ", approver.lastname) as approver_name'),
+                DB::raw('CONCAT(decliner.firstname, " ", decliner.lastname) as decliner_name')
             )
             ->join('users as member', 'member.user_id', '=', 'shares.user_id')
             ->leftJoin('users as approver', 'approver.user_id', '=', 'shares.approved_by_id')
             ->leftJoin('users as decliner', 'decliner.user_id', '=', 'shares.declined_by_id')
-            ->join('status_lookup', 'status_lookup.status_lookup_id', '=', 'shares.status_id');
+            ->join('status_lookup', 'status_lookup.status_lookup_id', '=', 'shares.status_id')
+            ->orderBy('shares.created_datetime', 'DESC');
 
         if (!empty($memberId)) {
             $query->where('shares.user_id', '=', $memberId);
+            $query->orderBy('shares.created_datetime', 'DESC');
+        }
+
+        if (!empty($shareId)) {
+            $query->where('shares.share_id', '=', $shareId);
+            return $query->first();
         }
 
         return $query->get();
+    }
+
+    public function getShare($shareId)
+    {
+        return $this->getAllShares(null, $shareId);
     }
 
     public function getMemberShares($memberId)
