@@ -1,32 +1,50 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Member;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Share;
-use App\Models\StatusLookup;
-use App\Helpers\MemberHelper;
+use App\Models\ShareTransactions;
 use JWTAuth;
 use App\Http\Requests\ShareRequest;
+use App\Helpers\MemberHelper;
+use App\Models\StatusLookup;
 
 class ShareController extends Controller
 {
     protected $Share;
 
-    public function __construct(Share $Share)
-    {
+    public function __construct(
+        Share $Share,
+        ShareTransactions $ShareTransactions
+    ) {
         $this->Share = $Share;
+        $this->ShareTransactions = $ShareTransactions;
     }
 
     public function index()
     {
-        return response()->json(['data' => $this->Share->getAllShares()]);
+        $user = JWTAuth::parseToken()->authenticate();
+        return response()->json($this->Share->getMemberShares($user->user_id));
+    }
+
+    public function show($id)
+    {
+        $Share = $this->Share->getShare($id);
+
+        if (!$Share) {
+            return response()->json(['message' => 'Share Not Found.'], 404);
+        }
+
+        return response()->json(['data' => $Share]);
     }
 
     public function store(ShareRequest $ShareRequest)
     {
+        echo 1; exit;
         $user = JWTAuth::parseToken()->authenticate();
 
         $validated = $ShareRequest->validated();
@@ -55,5 +73,19 @@ class ShareController extends Controller
         $Share->save();
 
         return response()->json(['data' => ['message' => 'success']]);
+    }
+    
+    public function summary($id)
+    {
+
+        $shareTotal = $this->ShareTransactions->getShareTransactionTotal($id);
+        $ytdShareTotal = $this->ShareTransactions->getYearToDateShareTransactionTotal($id);
+
+        return response()->json(
+            [
+                'total_shares' => $shareTotal->share,
+                'ytd_share'    => $ytdShareTotal->share_capital ?? 0,
+            ]
+        );
     }
 }
