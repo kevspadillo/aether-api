@@ -27,7 +27,7 @@ class AuthController extends Controller
             'id'           => $user['user']->user_id,
             'username'     => $user['user']->email,
             'email'        => $user['user']->email,
-            'roles'        => [1],
+            'roles'        => [$user['user']->role_id],
             'pic'          => './assets/media/users/default.jpg',
             'fullname'     => $user['user']->firstname . ' ' . $user['user']->lastname,
             'occupation'   => 'CEO',

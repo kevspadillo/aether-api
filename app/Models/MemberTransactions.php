@@ -17,6 +17,7 @@ class MemberTransactions extends Model
         'transaction_type',
         'transaction_date',
         'is_posted',
+        'user_id',
         'create_datetime',
         'posted_datetime',
     ];
@@ -45,7 +46,11 @@ class MemberTransactions extends Model
         $query->leftJoin('users as poster', 'poster.user_id', '=', 'member_transactions.posted_by_user_id');
         $query->where('member_transactions.transaction_type', '=', $transactionType);
         $query->orderBy('member_transactions.created_datetime', 'DESC');
-
         return $query->get();
+    }
+
+    public function contributions()
+    {
+        return $this->hasMany('App\Models\LoanTransactions', 'member_transaction_id', 'member_transaction_id');
     }
 }

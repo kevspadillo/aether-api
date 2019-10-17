@@ -13,51 +13,74 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::post('register', 'RegisterController@register');
-
 
 Route::post('login', 'LoginController@login');
 Route::get('login', 'LoginController@index');
-Route::get('auth-check', 'AuthController@check');
 
-Route::resource('users', 'UserController');
+Route::resource('roles', 'RoleController');
+Route::resource('permissions', 'PermissionController');
 
-Route::put('member/{id}/approve', 'UserController@approveMember');
-Route::put('member/{id}/delete', 'UserController@deleteMember');
-Route::put('member/{id}/disapprove', 'UserController@disapproveMember');
+Route::group(['middleware' => ['jwt.auth']], function() {
+    Route::resource('users', 'UserController');
+    Route::put('change-password/{id}', 'UserController@changePassword');
 
-/**
- * Admin Share Routes
- */
-Route::resource('admin/shares', 'Admin\ShareController');
-Route::put('admin/shares/{id}/approve', 'Admin\ShareController@approve');
-Route::put('admin/shares/{id}/disapprove', 'Admin\ShareController@disapprove');
-Route::resource('admin/share-transactions', 'Admin\ShareTransactionsController');
+    Route::get('auth-check', 'AuthController@check');
 
-/**
- * Savings Routes
- */
-Route::resource('admin/savings', 'Admin\SavingsController');
-Route::put('admin/savings/{id}/approve', 'Admin\SavingsController@approve');
-Route::put('admin/savings/{id}/disapprove', 'Admin\SavingsController@disapprove');
-Route::resource('admin/savings-transactions', 'Admin\SavingsTransactionsController');
 
-/**
- * Member Share Routes
- */
-Route::resource('member/shares', 'Member\ShareController');
-Route::resource('member/{id}/share-transactions', 'Member\ShareTransactionController');
-Route::resource('member/{id}/savings-transactions', 'Member\SavingsTransactionController');
-Route::get('member/shares/{id}/summary', 'Member\ShareController@summary');
+    Route::put('member/{id}/approve', 'UserController@approveMember');
+    Route::put('member/{id}/delete', 'UserController@deleteMember');
+    Route::put('member/{id}/disapprove', 'UserController@disapproveMember');
 
-/**
- * Member Savings Routes
- */
-Route::resource('member/savings', 'Member\SavingsController');
+    Route::post('loans/calculate-loan', 'LoanCalculatorController@calculateLoan');
 
-// Route::resource('import', 'ImportController');
-// Route::post('save-transaction', 'ImportController@saveTransaction');
+
+    Route::prefix('admin')->group(function () {
+
+        /**
+         * Admin Share Routes
+         */
+        Route::resource('shares', 'Admin\ShareController');
+        Route::put('shares/{id}/approve', 'Admin\ShareController@approve');
+        Route::put('shares/{id}/disapprove', 'Admin\ShareController@disapprove');
+        Route::resource('share-transactions', 'Admin\ShareTransactionsController');
+
+        /**
+         * Admin Savings Routes
+         */
+        Route::resource('savings', 'Admin\SavingsController');
+        Route::put('savings/{id}/approve', 'Admin\SavingsController@approve');
+        Route::put('savings/{id}/disapprove', 'Admin\SavingsController@disapprove');
+        Route::resource('savings-transactions', 'Admin\SavingsTransactionsController');
+
+        /**
+         * Admi Loan Routes
+         */
+        Route::resource('loans', 'Admin\LoanController');
+        Route::put('loans/{loanId}/verify', 'Admin\LoanController@verifyLoan');
+        Route::resource('loans-transactions', 'Admin\LoanTransactionsController');
+    });
+
+
+    Route::prefix('member')->group(function () {
+
+        Route::resource('shares', 'Member\ShareController');
+        Route::resource('savings', 'Member\SavingsController');
+        Route::resource('loans', 'Member\LoanController');
+
+        Route::get('shares/{id}/summary', 'Member\ShareController@summary');
+
+        Route::resource('{id}/share-transactions', 'Member\ShareTransactionController');
+        Route::resource('{id}/savings-transactions', 'Member\SavingsTransactionController');
+        Route::resource('{id}/loan-transactions', 'Member\LoanTransactionController');
+
+        Route::resource('loan/co-maker', 'Member\LoanCoMakerController');
+    });
+
+
+    /**
+     * Transaction Upload
+     */
+    Route::resource('import', 'ImportController');
+    Route::post('save-transaction', 'ImportController@saveTransaction');
+});

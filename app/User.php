@@ -26,7 +26,7 @@ class User extends Authenticatable implements JWTSubject
         'sss_number',
         'email',
         'password',
-        'user_type_id',
+        'role_id',
         'user_status_id',
     ];
 
@@ -36,7 +36,7 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token'
+        'password', 'remember_token', 'user_status_id', 'role_id'
     ];
 
     /**
@@ -74,6 +74,7 @@ class User extends Authenticatable implements JWTSubject
     {
         return DB::table('users')
             ->select(
+                'users.*',
                 'users.user_id', 
                 'users.firstname', 
                 'users.middlename', 
@@ -83,13 +84,13 @@ class User extends Authenticatable implements JWTSubject
                 'users.tin_number', 
                 'users.sss_number', 
                 'users.email', 
-                'user_types.*', 
+                'roles.*', 
                 'user_statuses.*',
                 DB::raw('1 as profile_status'),
                 DB::raw('1 as seminar_status'),
                 DB::raw('1 as assessment_status'),
             )
-            ->join('user_types', 'users.user_type_id', '=', 'user_types.user_type_id')
+            ->join('roles', 'roles.id', '=', 'users.role_id')
             ->join('user_statuses', 'users.user_status_id', '=', 'user_statuses.user_status_id')
             ->get();
     }
@@ -99,6 +100,7 @@ class User extends Authenticatable implements JWTSubject
 
         return DB::table('users')
             ->select(
+                'users.*',
                 'users.user_id', 
                 'users.firstname', 
                 'users.middlename', 
@@ -108,15 +110,33 @@ class User extends Authenticatable implements JWTSubject
                 'users.tin_number', 
                 'users.sss_number', 
                 'users.email', 
-                'user_types.*', 
+                'roles.*', 
                 'user_statuses.*',
                 DB::raw('1 as profile_status'),
                 DB::raw('1 as seminar_status'),
                 DB::raw('1 as assessment_status'),
             )
-            ->join('user_types', 'users.user_type_id', '=', 'user_types.user_type_id')
+            ->join('roles', 'users.role_id', '=', 'roles.id')
             ->join('user_statuses', 'users.user_status_id', '=', 'user_statuses.user_status_id')
             ->whereIn('users.user_id', $memberIds)
+            ->get();
+    }
+
+    public function loans()
+    {
+        return $this->hasMany('App\Models\Loan', 'user_id', 'user_id');
+    }
+
+    public function loanTransactions()
+    {
+        return $this->hasMany('App\Models\MemberTransactions', 'user_id', 'user_id')->where('transaction_type','=', 'LOAN');
+    }
+
+    public function getUserByIdAndPassword($userId, $password)
+    {
+        return DB::table('users')
+            ->where('user_id', '=', $userId)
+            ->where('password', '=', $password)
             ->get();
     }
 }

@@ -46,7 +46,7 @@ class ShareRequest extends FormRequest
             'number_of_shares.required'=> 'Number of shares is required.',
             'number_of_shares.numeric' => 'Invalid value for number of shares.',
             'payment_date.required'    => 'You must provide the payment date.',
-            'number_of_shares.min'     => 'Minimum of 1 share value is required.',
+            'number_of_shares.min'     => 'Minimum of 1 share (PHP 50.00 ) value is required.',
             'payment_date.after'       => 'Selected payment date must not be the past dates.',
             'status_id.exists'         => 'Share status is not valid.'
         ];

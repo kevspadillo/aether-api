@@ -20,7 +20,17 @@ class UserController extends Controller
 
     public function index()
     {
-        return response()->json(['data' => $this->User->getAllUsers()]);
+        $users = $this->User->getAllUsers();
+
+
+        foreach ($users as $user) {
+            $user->profile_status = true;
+            if (in_array(null, (array) $user)) {
+                $user->profile_status = false;
+            }
+        }
+
+        return response()->json(['data' => $users]);
     }
 
     public function show($id)
@@ -80,20 +90,24 @@ class UserController extends Controller
 
         $User = $this->User::findOrFail($id);
 
-
         $data = $Request->all();
 
         $validator = Validator::make($data, [
-            'firstname'      => 'required',
-            'middlename'     => 'required',
-            'lastname'       => 'required',
-            'gender'         => 'required',
-            'civil_status'   => 'required',
-            'tin_number'     => 'required',
-            'sss_number'     => 'required',
-            'email'          => 'required|unique:users,email,' . $id . ',user_id|max:255',
-            'contact_number' => 'required',
-            'password'       => 'required|min:8',
+            'firstname'           => 'required',
+            'middlename'          => 'required',
+            'lastname'            => 'required',
+            'gender'              => 'required',
+            'civil_status'        => 'required',
+            'tin_number'          => 'required',
+            'sss_number'          => 'required',
+            'email'               => 'required|unique:users,email,' . $id . ',user_id|max:255',
+            'landline_number'     => 'required',
+            'mobile_number'       => 'required',
+            'nationality'         => 'required',
+            'mailing_address'     => 'required',
+            'employee_type_id'    => 'required',
+            'division_id'         => 'required',
+            'other_income_source' => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -101,18 +115,21 @@ class UserController extends Controller
             return response()->json($errors, 409);
         }
 
-        $User->firstname      = $data['firstname'];
-        $User->middlename     = $data['middlename'];
-        $User->lastname       = $data['lastname'];
-        $User->gender         = $data['gender'];
-        $User->civil_status   = $data['civil_status'];
-        $User->tin_number     = $data['tin_number'];
-        $User->sss_number     = $data['sss_number'];
-        $User->email          = $data['email'];
-        $User->contact_number = $data['contact_number'];
-        $User->password       = Hash::make($data['password']);
-        $User->user_type_id   = $data['user_type_id'];
-        $User->user_status_id = $data['user_status_id'];
+        $User->firstname           = $data['firstname'];
+        $User->middlename          = $data['middlename'];
+        $User->lastname            = $data['lastname'];
+        $User->gender              = $data['gender'];
+        $User->civil_status        = $data['civil_status'];
+        $User->tin_number          = $data['tin_number'];
+        $User->sss_number          = $data['sss_number'];
+        $User->email               = $data['email'];
+        $User->landline_number     = $data['landline_number'];
+        $User->mobile_number       = $data['mobile_number'];
+        $User->nationality         = $data['nationality'];
+        $User->mailing_address     = $data['mailing_address'];
+        $User->employee_type_id    = $data['employee_type_id'];
+        $User->division_id         = $data['division_id'];
+        $User->other_income_source = $data['other_income_source'];
         
         $User->save();
 
@@ -146,5 +163,31 @@ class UserController extends Controller
         $User->user_status_id = UserStatus::INACTIVE;
         $User->save();
         return response()->json(['message' => 'Member deleted.']);
+    }
+
+    public function changePassword(Request $Request, $id)
+    {
+        $data = $Request->all();
+
+        $User = $this->User::findOrFail($id);
+
+        if (!Hash::check($data['password'], $User->password)) {
+            return response()->json(['passsword' => ['Invalid current password.']], 409);
+        }
+
+        $validator = Validator::make($data, [
+            'password'     => 'required',
+            'new_password' => 'required|confirmed|min:6',
+        ]);
+
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            return response()->json($errors, 409);
+        }
+
+        $User->password = Hash::make($data['new_password']);        
+        $User->save();
+
+        return response()->json(['message' => 'success']);
     }
 }

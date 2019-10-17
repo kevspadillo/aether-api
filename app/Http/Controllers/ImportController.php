@@ -30,12 +30,14 @@ class ImportController extends Controller
         User                $User,
         MemberTransactions  $MemberTransactions,
         ShareTransactions   $ShareTransactions,
-        SavingsTransactions $SavingsTransactions
+        SavingsTransactions $SavingsTransactions,
+        LoanTransactions    $LoanTransactions
     ) {
         $this->User                = $User;
         $this->MemberTransactions  = $MemberTransactions;
         $this->ShareTransactions   = $ShareTransactions;
         $this->SavingsTransactions = $SavingsTransactions;
+        $this->LoanTransactions = $LoanTransactions;
     }
 
     public function store(Request $Request)
@@ -143,29 +145,23 @@ class ImportController extends Controller
 
         $data = $Request->all();
 
-        // $MemberLoanTransactions = new MemberTransactions();
-        // $MemberLoanTransactions->transaction_type = 'LOAN';
-        // $MemberLoanTransactions->is_posted = 0;
-        // $MemberLoanTransactions->user_id = $user->user_id;
-        // $MemberLoanTransactions->save();
+        $MemberLoanTransactions = MemberTransactions::create([
+            'transaction_type' => 'LOAN',
+            'is_posted'        => 0,
+            'user_id'          => $user->user_id,
+        ]);
 
-        // $loansTransactionId = $MemberLoanTransactions->member_transaction_id;
+        $MemberShareTransactions = MemberTransactions::create([
+            'transaction_type' => 'SHARE',
+            'is_posted'        => 0,
+            'user_id'          => $user->user_id
+        ]);
 
-        $MemberShareTransactions = new MemberTransactions();
-        $MemberShareTransactions->transaction_type = 'SHARE';
-        $MemberShareTransactions->is_posted = 0;
-        $MemberShareTransactions->user_id = $user->user_id;
-        $MemberShareTransactions->save();
-
-        $shareTransactionId = $MemberShareTransactions->member_transaction_id;
-
-        $MemberSavingsTransactions = new MemberTransactions();
-        $MemberSavingsTransactions->transaction_type = 'SAVINGS';
-        $MemberSavingsTransactions->is_posted = 0;
-        $MemberSavingsTransactions->user_id = $user->user_id;
-        $MemberSavingsTransactions->save();
-
-        $savingsTransactionId = $MemberSavingsTransactions->member_transaction_id;
+        $MemberSavingsTransactions = MemberTransactions::create([
+            'transaction_type' => 'SAVINGS',
+            'is_posted'        => 0,
+            'user_id'          => $user->user_id
+        ]);
 
         foreach ($data as $memberId => $transactionRecords) {
             
@@ -178,7 +174,7 @@ class ImportController extends Controller
                 $date = explode('|', $transactionDate);
 
                 $shares[$transactionDate] = [
-                    'member_transaction_id' => $shareTransactionId,
+                    'member_transaction_id' => $MemberShareTransactions->member_transaction_id,
                     'member_id'             => $memberId,
                     'transaction_date'      => $date[1],
                     'reference_id'          => $transaction['shares']['reference_id'],
@@ -188,7 +184,7 @@ class ImportController extends Controller
 
                 $savings[$transactionDate] = [ 
                     'member_id'              => $memberId,
-                    'member_transaction_id'  => $savingsTransactionId,
+                    'member_transaction_id'  => $MemberSavingsTransactions->member_transaction_id,
                     'reference_id'           => $transaction['savings']['reference_id'],
                     'transaction_date'       => $date[1],
                     'savings_deposit'        => $transaction['savings']['savings_deposit'],
@@ -196,24 +192,23 @@ class ImportController extends Controller
                     'savings'                => $transaction['savings']['savings']
                 ];
 
-                // $loans[$transactionDate] = [
-                //     'member_id'             => $memberId,
-                //     'member_transaction_id' => $loansTransactionId,
-                //     'reference_id'          => $transaction['loans']['reference_id'],
-                //     'transaction_date'      => $date[1],
-                //     'loans_receivable'      => $transaction['loans']['loans_receivable'],
-                //     'interest_on_loan'      => $transaction['loans']['interest_on_loans'],
-                //     'penalty'               => $transaction['loans']['penalty'],
-                //     'remaining_loan'        => $transaction['loans']['remaining_loan'],
-                //     'total_interest'        => $transaction['loans']['total_interest'],
-                //     'total_penalty'         => $transaction['loans']['total_penalty'],
-                // ];
+                $loans[$transactionDate] = [
+                    'member_id'             => $memberId,
+                    'member_transaction_id' => $MemberLoanTransactions->member_transaction_id,
+                    'reference_id'          => $transaction['loans']['reference_id'],
+                    'transaction_date'      => $date[1],
+                    'loans_receivable'      => $transaction['loans']['loans_receivable'],
+                    'interest_on_loan'      => $transaction['loans']['interest_on_loans'],
+                    'penalty'               => $transaction['loans']['penalty'],
+                    'remaining_loan'        => $transaction['loans']['remaining_loan'],
+                    'total_interest'        => $transaction['loans']['total_interest'],
+                    'total_penalty'         => $transaction['loans']['total_penalty'],
+                ];
             }
-            
+
             $this->ShareTransactions->saveImportedShareTransactions($shares, $memberId);
             $this->SavingsTransactions->saveImportedSavingsTransactions($savings, $memberId);
-            // SavingsTransactions::insert($savings);
-            // LoanTransactions::insert($loans);
+            $this->LoanTransactions->saveImportedLoanTransactions($loans, $memberId);
         }
         return response()->json(['message' => 'Transactions Saved.']);
     }

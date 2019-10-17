@@ -44,7 +44,6 @@ class ShareController extends Controller
 
     public function store(ShareRequest $ShareRequest)
     {
-        echo 1; exit;
         $user = JWTAuth::parseToken()->authenticate();
 
         $validated = $ShareRequest->validated();
