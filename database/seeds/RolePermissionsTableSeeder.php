@@ -41,5 +41,6 @@ class RolePermissionsTableSeeder extends Seeder
         RolePermission::create(['role_id' => '4', 'permission_id' => '9' ]);
         RolePermission::create(['role_id' => '4', 'permission_id' => '10' ]);
         RolePermission::create(['role_id' => '4', 'permission_id' => '11' ]);
+        RolePermission::create(['role_id' => '1', 'permission_id' => '12' ]);
     }
 }

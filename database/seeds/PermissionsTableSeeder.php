@@ -25,5 +25,6 @@ class PermissionsTableSeeder extends Seeder
         Permission::create(['permission_id' => '9',   'name' => 'accessToMemberSavingsModule', 'level' => '0', 'parent_id' => null, 'title' => 'Member Savings Module' ]);
         Permission::create(['permission_id' => '10',  'name' => 'accessToMemberLoansModule',   'level' => '0', 'parent_id' => null, 'title' => 'Member Loans Module' ]);
         Permission::create(['permission_id' => '11',  'name' => 'accessToMemberProfileModule', 'level' => '0', 'parent_id' => null, 'title' => 'Member Profile Module' ]);
+        Permission::create(['permission_id' => '12',  'name' => 'accessToDashboardWidgets',    'level' => '0', 'parent_id' => null, 'title' => 'Access To Dashboard Widgets' ]);
     }
 }

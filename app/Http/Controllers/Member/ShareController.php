@@ -87,4 +87,18 @@ class ShareController extends Controller
             ]
         );
     }
+
+    public function destroy($id)
+    {
+        $Share = Share::find($id);
+            
+        if (!$Share) {
+            return response()->json(['message' => 'Share Not Found.'], 404);
+        }
+
+        $Share->is_deleted = 1;
+        $Share->save();
+
+        return response()->json(['data' => ['message' => 'success']]);
+    }
 }

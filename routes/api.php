@@ -34,6 +34,13 @@ Route::group(['middleware' => ['jwt.auth']], function() {
 
     Route::post('loans/calculate-loan', 'LoanCalculatorController@calculateLoan');
 
+    Route::prefix('dashboard')->group(function() {
+        Route::get('membership', 'Admin\DashboardController@membershipSummary');
+        Route::get('shares', 'Admin\DashboardController@postedShares');
+        Route::get('savings', 'Admin\DashboardController@postedSavings');
+        Route::get('loans', 'Admin\DashboardController@postedLoans');
+        Route::get('summary', 'Admin\DashboardController@countSummary');
+    });
 
     Route::prefix('admin')->group(function () {
 

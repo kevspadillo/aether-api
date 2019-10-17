@@ -56,6 +56,7 @@ class Share extends Model
             ->leftJoin('users as approver', 'approver.user_id', '=', 'shares.approved_by_id')
             ->leftJoin('users as decliner', 'decliner.user_id', '=', 'shares.declined_by_id')
             ->join('status_lookup', 'status_lookup.status_lookup_id', '=', 'shares.status_id')
+            ->where('shares.is_deleted', '=', 0)
             ->orderBy('shares.created_datetime', 'DESC');
 
         if (!empty($memberId)) {
