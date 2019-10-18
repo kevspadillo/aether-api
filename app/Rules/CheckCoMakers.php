@@ -45,6 +45,12 @@ class CheckCoMakers implements Rule
 
             foreach ($value as $coMakerId) {
                 $coMakerShareCapital = $this->ShareTransactions->getShareTransactionTotal($coMakerId);
+
+                if (empty($coMakerShareCapital)) {
+                    $isValidCoMakers = false;
+                    break;
+                }
+
                 if ($coMakerShareCapital->share < $this->individualRequiredShare) {
                     $isValidCoMakers = false;
                 }

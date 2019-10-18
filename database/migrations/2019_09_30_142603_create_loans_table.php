@@ -21,6 +21,9 @@ class CreateLoansTable extends Migration
             $table->integer('payment_method_id');
             $table->integer('verified_by')->nullable();
             $table->smallInteger('status_id');
+            $table->smallInteger('loan_type_id');
+            $table->smallInteger('loan_purpose_id');
+            $table->string('collateral')->nullable();
             $table->timestamp('verified_datetime')->nullable();
             $table->timestamp('create_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->useCurrent();

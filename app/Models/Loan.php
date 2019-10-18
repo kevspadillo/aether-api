@@ -41,12 +41,16 @@ class Loan extends Model
             ->select(
                 'loans.*',
                 'status_lookup.*',
+                'loan_types.*',
+                'loan_purposes.*',
                 DB::raw('CONCAT(member.firstname, " ", member.lastname) as member_name'),
                 DB::raw('CONCAT(verifier.firstname, " ", verifier.lastname) as verifier_name'),
             )
             ->join('users as member', 'member.user_id', '=', 'loans.user_id')
             ->leftJoin('users as verifier', 'verifier.user_id', '=', 'loans.verified_by')
             ->join('status_lookup', 'status_lookup.status_lookup_id', '=', 'loans.status_id')
+            ->join('loan_types', 'loan_types.loan_type_id', '=', 'loans.loan_type_id')
+            ->join('loan_purposes', 'loan_purposes.loan_purpose_id', '=', 'loans.loan_purpose_id')
             ->orderBy('loans.create_datetime', 'DESC');
 
         return $query->get();
@@ -73,6 +77,16 @@ class Loan extends Model
     public function paymentMethod()
     {
         return $this->hasOne('App\Models\LoanPaymentMethods', 'payment_method_id', 'payment_method_id');
+    }
+
+    public function loanType()
+    {
+        return $this->hasOne('App\Models\LoanTypes', 'loan_type_id', 'loan_type_id');
+    }
+
+    public function loanPurpose()
+    {
+        return $this->hasOne('App\Models\LoanPurposes', 'loan_purpose_id', 'loan_purpose_id');
     }
 
     public function member()

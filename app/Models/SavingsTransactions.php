@@ -87,4 +87,17 @@ class SavingsTransactions extends Model
 
         return self::insert($newSavingsTransactions);
     }
+
+    public function getShareTransactionTotal($memberId)
+    {
+        $query = DB::table('savings_transactions');
+        $query->select('savings_transactions.savings');
+        $query->join('member_transactions', 'member_transactions.member_transaction_id', '=', 'savings_transactions.member_transaction_id');
+        $query->join('users', 'users.user_id', '=', 'member_transactions.user_id');
+        $query->where('savings_transactions.member_id', '=', $memberId);
+        $query->where('member_transactions.is_posted', '=', 1);
+        $query->orderBy('savings_transactions.transaction_date', 'DESC');
+        $query->limit(1);
+        return $query->first();  
+    }
 }

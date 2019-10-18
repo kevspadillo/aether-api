@@ -39,4 +39,9 @@ class LoanCoMaker extends Model
 
         return $query->get();
     }
+
+    public function member()
+    {
+        return $this->hasOne('App\User', 'user_id', 'co_maker_user_id');
+    }
 }

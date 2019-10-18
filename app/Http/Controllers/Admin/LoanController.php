@@ -32,19 +32,23 @@ class LoanController extends Controller
         return response()->json(['data' => $this->Loan->getMemberLoanApplications()]);
     }
 
-    public function store(Request $Request)
+    public function show($loanId)
     {
+        $Loan = Loan::with([
+            'loanStatus', 
+            'verifiedBy', 
+            'paymentMethod', 
+            'loanType', 
+            'loanPurpose', 
+            'member', 
+            'coMakers.member'
+        ])->find($loanId);
 
-    }
+        if (!$Loan) {
+            return response()->json(['message' => 'Loan Not Found.'], 404);
+        }
 
-    public function destroy($loanId)
-    {
-
-    }
-
-    public function update(Request $Request, $id)
-    {
-
+        return response()->json(['data' => $Loan]);
     }
 
     public function verifyLoan(Request $Request, $id)

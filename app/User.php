@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use DB;
+use App\Models\Role;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -124,7 +125,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function loans()
     {
-        return $this->hasMany('App\Models\Loan', 'user_id', 'user_id');
+        return $this->hasMany('App\Models\Loan', 'user_id', 'user_id')->where('is_deleted', '=', 0);
     }
 
     public function loanTransactions()
@@ -138,5 +139,18 @@ class User extends Authenticatable implements JWTSubject
             ->where('user_id', '=', $userId)
             ->where('password', '=', $password)
             ->get();
+    }
+
+    public function getActiveMembersExclude($excludeUserId)
+    {
+        $query = DB::table('users')
+            ->select(
+                'users.user_id', 
+                DB::raw('CONCAT(users.firstname, " ", users.lastname) AS "user_name"'),
+            )
+            ->whereNotIn('users.user_id', [$excludeUserId])
+            ->where('users.role_id', '=', Role::MEMBER);
+
+        return $query->get();   
     }
 }

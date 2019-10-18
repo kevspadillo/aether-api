@@ -32,7 +32,10 @@ class LoanRequest extends FormRequest
         $rules = [
             'loan_amount'       => ['required'],
             'payment_date'      => 'required|after:today',
-            'payment_method_id' => 'required'
+            'payment_method_id' => 'required',
+            'loan_purpose_id'   => 'required',
+            'loan_type'         => 'required',
+            'co_makers'         => [],
         ];
 
         $rules['loan_amount'][] = new MaxLoanableAmount($data['loan_type']);

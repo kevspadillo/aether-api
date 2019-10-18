@@ -262,4 +262,11 @@ class UserController extends Controller
 
         return response()->json(['message' => 'success']);
     }
+
+    public function getActiveMembers()
+    {
+        $user = JWTAuth::parseToken()->authenticate();
+        $members = $this->User->getActiveMembersExclude($user->user_id);
+        return response()->json(['data' => $members]);
+    }
 }

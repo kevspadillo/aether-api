@@ -68,11 +68,11 @@ Route::group(['middleware' => ['jwt.auth']], function() {
         Route::resource('loans-transactions', 'Admin\LoanTransactionsController');
     });
 
-
     Route::prefix('member')->group(function () {
 
         Route::resource('shares', 'Member\ShareController');
         Route::resource('savings', 'Member\SavingsController');
+        Route::resource('withdrawals', 'Member\WithdrawalController');
         Route::resource('loans', 'Member\LoanController');
 
         Route::get('shares/{id}/summary', 'Member\ShareController@summary');
@@ -82,6 +82,11 @@ Route::group(['middleware' => ['jwt.auth']], function() {
         Route::resource('{id}/loan-transactions', 'Member\LoanTransactionController');
 
         Route::resource('loan/co-maker', 'Member\LoanCoMakerController');
+    });
+
+    Route::prefix('lookup')->group(function () {
+
+        Route::get('active-members', 'UserController@getActiveMembers');
     });
 
 

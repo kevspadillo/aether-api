@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSavingsTable extends Migration
+class CreateWithdrawalsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class CreateSavingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('savings', function (Blueprint $table) {
-            $table->bigIncrements('savings_id');
+        Schema::create('withdrawals', function (Blueprint $table) {
+            $table->bigIncrements('withdrawal_id');
             $table->integer('user_id');
             $table->double('amount', 8, 2);
             $table->string('amount_in_words')->nullable();
@@ -37,6 +37,6 @@ class CreateSavingsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('savings');
+        Schema::dropIfExists('withdrawals');
     }
 }
