@@ -96,5 +96,10 @@ Route::group(['middleware' => ['jwt.auth']], function() {
      * Transaction Upload
      */
 });
-    Route::resource('import', 'ImportController');
-    Route::post('save-transaction', 'ImportController@saveTransaction');
+
+Route::resource('import', 'ImportController');
+Route::post('save-transaction', 'ImportController@saveTransaction');
+
+Route::get('health-heck', function ($id) {
+    return 'Status: OK';
+})
