@@ -100,6 +100,6 @@ Route::group(['middleware' => ['jwt.auth']], function() {
 Route::resource('import', 'ImportController');
 Route::post('save-transaction', 'ImportController@saveTransaction');
 
-Route::get('health-heck', function ($id) {
+Route::get('health-check', function () {
     return 'Status: OK';
 });
