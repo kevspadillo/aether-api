@@ -31,6 +31,8 @@ Route::group(['middleware' => ['jwt.auth']], function() {
     Route::put('member/{id}/approve', 'UserController@approveMember');
     Route::put('member/{id}/delete', 'UserController@deleteMember');
     Route::put('member/{id}/disapprove', 'UserController@disapproveMember');
+    Route::put('member/{id}/activate', 'UserController@activateMember');
+    Route::put('member/{id}/deactivate', 'UserController@deactivateMember');
 
     Route::post('loans/calculate-loan', 'LoanCalculatorController@calculateLoan');
 
@@ -93,6 +95,6 @@ Route::group(['middleware' => ['jwt.auth']], function() {
     /**
      * Transaction Upload
      */
+});
     Route::resource('import', 'ImportController');
     Route::post('save-transaction', 'ImportController@saveTransaction');
-});

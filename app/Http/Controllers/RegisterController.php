@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\RegisterRequest;
 use App\User;
 use App\Models\UserStatus;
-use App\Models\UserType;
+use App\Models\Role;
 
 class RegisterController extends Controller
 {
@@ -27,7 +27,7 @@ class RegisterController extends Controller
         $this->User->email          = $validated['email'];
         $this->User->password       = Hash::make($validated['password']);
         $this->User->user_status_id = UserStatus::PENDING;
-        $this->User->user_type_id   = UserType::GUEST;
+        $this->User->role_id        = Role::GUEST;
 
         $this->User->save();
 

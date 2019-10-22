@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Request;
 use Str;
 use JWTAuth;
+use App\Models\UserStatus;
 
 class AuthController extends Controller
 {
@@ -22,6 +23,10 @@ class AuthController extends Controller
         }
 
         $user = compact('user');
+
+        if ($user['user']->user_status_id == UserStatus::INACTIVE) {
+            return response()->json(null);
+        }
 
         $userData = [
             'id'           => $user['user']->user_id,

@@ -29,10 +29,10 @@ class UserController extends Controller
     {
         $users = $this->User->getAllUsers();
 
-
         foreach ($users as $user) {
             $user->profile_status = true;
-            if (in_array(null, (array) $user)) {
+
+            if (in_array(null, (array) $user, true)) {
                 $user->profile_status = false;
             }
         }
@@ -126,6 +126,7 @@ class UserController extends Controller
             'employee_type_id'    => 'required',
             'division_id'         => 'required',
             'other_income_source' => 'required',
+            'birth_date'          => 'required',
         ]);
 
         if ($validator->fails()) {
@@ -148,6 +149,7 @@ class UserController extends Controller
         $User->employee_type_id    = $data['employee_type_id'];
         $User->division_id         = $data['division_id'];
         $User->other_income_source = $data['other_income_source'];
+        $User->birth_date          = date('Y-m-d', strtotime($data['birth_date']));
         
         $User->save();
 
@@ -169,7 +171,9 @@ class UserController extends Controller
     public function approveMember(Request $Request, $id)
     {
         $User = $this->User::findOrFail($id);
+        $User->role_id        = Role::GUEST;
         $User->user_status_id = UserStatus::APPROVED;
+
         $User->save();
 
         $user = JWTAuth::parseToken()->authenticate();
@@ -182,26 +186,11 @@ class UserController extends Controller
         return response()->json(['message' => 'Member approved']);
     }
 
-    public function activateMember(Request $Request, $id)
-    {
-        $User = $this->User::findOrFail($id);
-        $User->user_status_id = UserStatus::APPROVED;
-        $User->save();
-
-        $user = JWTAuth::parseToken()->authenticate();
-        $this->UserHistory->user_id        = $user->user_id;
-        $this->UserHistory->member_id      = $id;
-        $this->UserHistory->history_title  = "Member Updated";
-        $this->UserHistory->history_note   = "Member has been activated";
-        $this->UserHistory->save();
-
-        return response()->json(['message' => 'Member activated']);
-    }
-
     public function disapproveMember(Request $Request, $id)
     {
         $User = $this->User::findOrFail($id);
-        $User->role_id = Role::MEMBER;
+        $User->role_id        = Role::GUEST;
+        $User->user_status_id = UserStatus::REJECTED;
         $User->save();
 
         $user = JWTAuth::parseToken()->authenticate();
@@ -268,5 +257,39 @@ class UserController extends Controller
         $user = JWTAuth::parseToken()->authenticate();
         $members = $this->User->getActiveMembersExclude($user->user_id);
         return response()->json(['data' => $members]);
+    }
+
+    public function activateMember(Request $Request, $id)
+    {
+        $User = $this->User::findOrFail($id);
+        $User->user_status_id = UserStatus::ACTIVE;
+        $User->role_id        = Role::MEMBER;
+        $User->save();
+
+        $user = JWTAuth::parseToken()->authenticate();
+        $this->UserHistory->user_id        = $user->user_id;
+        $this->UserHistory->member_id      = $id;
+        $this->UserHistory->history_title  = "Member Updated";
+        $this->UserHistory->history_note   = "Member has been activated";
+        $this->UserHistory->save();
+
+        return response()->json(['message' => 'Member activated']);
+    }
+
+    public function deactivateMember(Request $Request, $id)
+    {
+        $User = $this->User::findOrFail($id);
+        $User->role_id        = Role::MEMBER;
+        $User->user_status_id = UserStatus::INACTIVE;
+        $User->save();
+
+        $user = JWTAuth::parseToken()->authenticate();
+        $this->UserHistory->user_id        = $user->user_id;
+        $this->UserHistory->member_id      = $id;
+        $this->UserHistory->history_title  = "Member Updated";
+        $this->UserHistory->history_note   = "Member has been activated";
+        $this->UserHistory->save();
+
+        return response()->json(['message' => 'Member activated']);
     }
 }

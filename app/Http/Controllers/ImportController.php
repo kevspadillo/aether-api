@@ -118,7 +118,7 @@ class ImportController extends Controller
 
                 }
 
-                if (($date->format('m') == 12) && empty($dateValue)) {
+                if (($date->format('m') == 12) || empty($dateValue)) {
                     $rowHasValue = false;
                 }
 
