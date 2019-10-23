@@ -40,7 +40,7 @@ class MemberTransactions extends Model
         $query->select(
                 'member_transactions.*',
                 DB::raw('CONCAT(poster.firstname, " ", poster.lastname) as posted_by'),
-                DB::raw('CONCAT(users.firstname, " ", users.lastname) as uploaded_by'),
+                DB::raw('CONCAT(users.firstname, " ", users.lastname) as uploaded_by')
             );
         $query->join('users', 'users.user_id', '=', 'member_transactions.user_id');
         $query->leftJoin('users as poster', 'poster.user_id', '=', 'member_transactions.posted_by_user_id');

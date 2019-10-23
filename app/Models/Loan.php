@@ -44,7 +44,7 @@ class Loan extends Model
                 'loan_types.*',
                 'loan_purposes.*',
                 DB::raw('CONCAT(member.firstname, " ", member.lastname) as member_name'),
-                DB::raw('CONCAT(verifier.firstname, " ", verifier.lastname) as verifier_name'),
+                DB::raw('CONCAT(verifier.firstname, " ", verifier.lastname) as verifier_name')
             )
             ->join('users as member', 'member.user_id', '=', 'loans.user_id')
             ->leftJoin('users as verifier', 'verifier.user_id', '=', 'loans.verified_by')
