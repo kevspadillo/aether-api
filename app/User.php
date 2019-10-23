@@ -89,7 +89,7 @@ class User extends Authenticatable implements JWTSubject
                 'user_statuses.*',
                 DB::raw('1 as profile_status'),
                 DB::raw('1 as seminar_status'),
-                DB::raw('1 as assessment_status'),
+                DB::raw('1 as assessment_status')
             )
             ->join('roles', 'roles.id', '=', 'users.role_id')
             ->join('user_statuses', 'users.user_status_id', '=', 'user_statuses.user_status_id')
@@ -115,7 +115,7 @@ class User extends Authenticatable implements JWTSubject
                 'user_statuses.*',
                 DB::raw('1 as profile_status'),
                 DB::raw('1 as seminar_status'),
-                DB::raw('1 as assessment_status'),
+                DB::raw('1 as assessment_status')
             )
             ->join('roles', 'users.role_id', '=', 'roles.id')
             ->join('user_statuses', 'users.user_status_id', '=', 'user_statuses.user_status_id')
@@ -146,7 +146,7 @@ class User extends Authenticatable implements JWTSubject
         $query = DB::table('users')
             ->select(
                 'users.user_id', 
-                DB::raw('CONCAT(users.firstname, " ", users.lastname) AS "user_name"'),
+                DB::raw('CONCAT(users.firstname, " ", users.lastname) AS "user_name"')
             )
             ->whereNotIn('users.user_id', [$excludeUserId])
             ->where('users.role_id', '=', Role::MEMBER);
