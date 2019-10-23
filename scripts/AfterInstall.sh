@@ -4,8 +4,8 @@
 
 cd /var/www/html
 
-sudo chmod -R 0777 storage
-sudo chmod -R 0777 bootstrap/cache
+chmod -R 0777 storage
+chmod -R 0777 bootstrap/cache
 
 # Install composer dependencies
 composer install
