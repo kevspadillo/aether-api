@@ -76,7 +76,6 @@ class UserController extends Controller
         $this->User->tin_number       = $data['tin_number'];
         $this->User->sss_number       = $data['sss_number'];
         $this->User->email            = $data['email'];
-        $this->User->contact_number   = (isset($data['contact_number']) ? $data['contact_number'] : null);
         $this->User->password         = Hash::make($data['password']);
         $this->User->role_id          = $data['user_type_id'];
         $this->User->employee_type_id = $data['employee_type_id'];
