@@ -31,6 +31,10 @@ class CheckWithdrawalAmount implements Rule
 
         $savings = $this->SavingsTransactions->getShareTransactionTotal($user->user_id);
         
+        if (!$savings) {
+            return false;
+        }
+
         $this->currentSavingsDeposit = $savings->savings;
         return  $value < $this->currentSavingsDeposit;
     }
