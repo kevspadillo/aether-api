@@ -89,10 +89,13 @@ class User extends Authenticatable implements JWTSubject
                 'user_statuses.*',
                 DB::raw('1 as profile_status'),
                 DB::raw('1 as seminar_status'),
-                DB::raw('1 as assessment_status')
+                DB::raw('1 as assessment_status'),
+                'member_assessments.assessment_score_rate',
+                'member_assessments.assessment_score'
             )
             ->join('roles', 'roles.id', '=', 'users.role_id')
             ->join('user_statuses', 'users.user_status_id', '=', 'user_statuses.user_status_id')
+            ->leftJoin('member_assessments', 'member_assessments.user_id', '=', 'users.user_id')
             ->get();
     }
 

@@ -11,6 +11,9 @@ use App\Models\UserType;
 use App\Models\Role;
 use App\Models\UserHistory;
 use JWTAuth;
+use App\Models\AssessmentQuestion;
+use App\Models\MemberSeminarStatus;
+use App\Models\SeminarVideo;
 
 class UserController extends Controller
 {
@@ -34,6 +37,24 @@ class UserController extends Controller
 
             if (in_array(null, (array) $user, true)) {
                 $user->profile_status = false;
+            }
+
+            $user->total_questions = AssessmentQuestion::count(); 
+
+            $user->assessment_status = true;
+            if (empty($user->assessment_score)) {
+                $user->assessment_status = false;
+            }
+
+            $watchedDuration = MemberSeminarStatus::where('user_id', $user->user_id)->sum('watch_duration');
+            $totalDuration = SeminarVideo::sum('video_duration');
+
+            $user->watched = $watchedDuration;
+            $user->total_duration = $totalDuration;
+
+            $user->seminar_status = true;
+            if ($watchedDuration < $totalDuration) {
+                $user->seminar_status = false;
             }
         }
 

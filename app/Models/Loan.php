@@ -93,4 +93,9 @@ class Loan extends Model
     {
         return $this->belongsTo('App\User', 'user_id', 'user_id');
     }
+
+    public function interestRate()
+    {
+        return $this->hasOne('App\Models\LoanSetting', 'loan_setting_id', 'interest_rate_id');
+    }
 }

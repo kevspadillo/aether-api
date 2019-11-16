@@ -15,6 +15,7 @@ use App\Models\LoanCoMaker;
 use App\Models\StatusLookup;
 use App\Models\ShareTransactions;
 use App\User;
+use App\Models\LoanSetting;
 
 class LoanController extends Controller
 {
@@ -33,7 +34,7 @@ class LoanController extends Controller
     public function index()
     {
         $user = JWTAuth::parseToken()->authenticate();
-        $Loans = User::with(['loans.loanStatus', 'loans.verifiedBy','loans.paymentMethod'])
+        $Loans = User::with(['loans.loanStatus', 'loans.verifiedBy','loans.paymentMethod', 'loans.interestRate'])
             ->find($user->user_id)->loans;
         return response()->json(['data' => $Loans]);
     }
@@ -53,6 +54,8 @@ class LoanController extends Controller
 
         $user = JWTAuth::parseToken()->authenticate();
 
+        $loanSetting = LoanSetting::where('is_active', 1)->first();
+
         $this->Loans->user_id                  = $user->user_id;
         $this->Loans->loan_amount              = $validated['loan_amount'];
         $this->Loans->initial_payment_due_date = date('Y-m-d', strtotime($validated['payment_date']));
@@ -60,6 +63,7 @@ class LoanController extends Controller
         $this->Loans->loan_type_id             = $validated['loan_type'];
         $this->Loans->loan_purpose_id          = $validated['loan_purpose_id'];
         $this->Loans->status_id                = StatusLookup::PENDING;
+        $this->Loans->interest_rate_id         = $loanSetting->loan_setting_id;
         $this->Loans->save();
 
         $loanId = $this->Loans->loan_id;

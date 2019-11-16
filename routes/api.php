@@ -68,6 +68,8 @@ Route::group(['middleware' => ['jwt.auth']], function() {
         Route::resource('loans', 'Admin\LoanController');
         Route::put('loans/{loanId}/verify', 'Admin\LoanController@verifyLoan');
         Route::resource('loans-transactions', 'Admin\LoanTransactionsController');
+
+        Route::resource('loan-settings', 'Admin\LoanSettingsController');
     });
 
     Route::prefix('member')->group(function () {
@@ -84,6 +86,15 @@ Route::group(['middleware' => ['jwt.auth']], function() {
         Route::resource('{id}/loan-transactions', 'Member\LoanTransactionController');
 
         Route::resource('loan/co-maker', 'Member\LoanCoMakerController');
+        Route::resource('seminar-video', 'Member\SeminarVideoController');
+        Route::resource('member-seminar-video', 'Member\MemberSeminarStatusController');
+        Route::resource('assessment', 'Member\AssessmentController');
+    });
+
+    Route::prefix('assessment')->group(function () {
+
+        Route::resource('questions', 'Member\AssessmentQuestionController');
+        Route::resource('answer', 'Member\AssessmentAnswerController');
     });
 
     Route::prefix('lookup')->group(function () {
