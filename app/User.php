@@ -99,6 +99,35 @@ class User extends Authenticatable implements JWTSubject
             ->get();
     }
 
+    public function getUser($userId)
+    {
+        return DB::table('users')
+            ->select(
+                'users.*',
+                'users.user_id', 
+                'users.firstname', 
+                'users.middlename', 
+                'users.lastname', 
+                'users.gender', 
+                'users.civil_status', 
+                'users.tin_number', 
+                'users.sss_number', 
+                'users.email', 
+                'roles.*', 
+                'user_statuses.*',
+                DB::raw('1 as profile_status'),
+                DB::raw('1 as seminar_status'),
+                DB::raw('1 as assessment_status'),
+                'member_assessments.assessment_score_rate',
+                'member_assessments.assessment_score'
+            )
+            ->join('roles', 'roles.id', '=', 'users.role_id')
+            ->join('user_statuses', 'users.user_status_id', '=', 'user_statuses.user_status_id')
+            ->leftJoin('member_assessments', 'member_assessments.user_id', '=', 'users.user_id')
+            ->where('users.user_id', '=', $userId)
+            ->first();   
+    }
+
     public function getMembers($memberIds)
     {
 

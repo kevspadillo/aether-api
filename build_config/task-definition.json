@@ -1,0 +1,25 @@
+{
+    "family": "ecommerce-task-definition",
+    "networkMode": "bridge",
+    "executionRoleArn": "arn:aws:iam::198862031942:role/ecsTaskExecutionRole",
+    "containerDefinitions": [
+        {
+            "name": "ecommerce-container",
+            "portMappings": [
+                {
+                  "hostPort": 80,
+                  "protocol": "tcp",
+                  "containerPort": 80
+                }
+            ],
+            "essential": true,
+            "entryPoint": null,
+            "command": null
+        }
+    ],
+    "requiresCompatibilities": [
+        "EC2"
+    ],
+    "cpu": "2048",
+    "memory": "4096"
+}

@@ -63,7 +63,33 @@ class UserController extends Controller
 
     public function show($id)
     {
-        return $this->User::findOrFail($id);
+        $userProfile = $this->User::findOrFail($id);
+        $user        = $this->User->getUser($id);
+        
+        $user->profile_status = true;
+
+        if (in_array(null, $userProfile->toArray(), true)) {
+            $user->profile_status = false;
+        }
+
+        $user->assessment_status = true;
+        if (empty($user->assessment_score)) {
+            $user->assessment_status = false;
+        }
+
+        $watchedDuration = MemberSeminarStatus::where('user_id', $user->user_id)->sum('watch_duration');
+        $totalDuration = SeminarVideo::sum('video_duration');
+
+        $user->watched = $watchedDuration;
+        $user->total_duration = $totalDuration;
+
+        $user->seminar_status = true;
+        if ($watchedDuration < $totalDuration) {
+            $user->seminar_status = false;
+        }
+        
+        return response()->json($user);
+
     }
 
     public function store(Request $Request)
@@ -115,6 +141,20 @@ class UserController extends Controller
         $this->UserHistory->history_title  = "Member Created";
         $this->UserHistory->history_note   = "Member added.";
         $this->UserHistory->save();
+
+        $seminarVideos = SeminarVideo::all();
+        $seminarVideoStatuses = [];
+
+        foreach ($seminarVideos as $seminarVideo) {
+
+            $seminarVideoStatuses[] = [
+                'user_id'          => $this->User->user_id,
+                'watch_duration'   => 0,
+                'seminar_video_id' => $seminarVideo->seminar_video_id
+            ];
+        }
+
+        MemberSeminarStatus::insert($seminarVideoStatuses);
 
         return response()->json([
             'message' => 'success',
