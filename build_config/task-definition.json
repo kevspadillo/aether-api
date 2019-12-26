@@ -1,5 +1,5 @@
 {
-    "family": "ecommerce-task-definition",
+    "family": "jrcmpc-api-task-definition",
     "networkMode": "bridge",
     "executionRoleArn": "arn:aws:iam::547480007890:role/ecsTaskExecutionRole",
     "containerDefinitions": [
