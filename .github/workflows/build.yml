@@ -52,18 +52,18 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-#       - name: UPDATE TASK DEFINITION
-#         id: task-def
-#         uses: aws-actions/amazon-ecs-render-task-definition@v1
-#         with:
-#           task-definition: build_config/task-definition.json
-#           container-name: ecommerce-container
-#           image: ${{ steps.build-image.outputs.image }}
+      - name: UPDATE TASK DEFINITION
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: build_config/task-definition.json
+          container-name: jrcmpc-container
+          image: ${{ steps.build-image.outputs.image }}
 
-#       - name: DEPLOY TASK DEFINITION TO AWS ECS
-#         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-#         with:
-#           task-definition: ${{ steps.task-def.outputs.task-definition }}
-#           service: ecommerce-cluster-service
-#           cluster: decathlon-ecommerce-cluster
-#           wait-for-service-stability: true
+      - name: DEPLOY TASK DEFINITION TO AWS ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: jrcmpc-api-cluster-service
+          cluster: jrcmpc-api-cluster
+          wait-for-service-stability: true

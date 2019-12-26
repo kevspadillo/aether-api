@@ -1,10 +1,10 @@
 {
     "family": "ecommerce-task-definition",
     "networkMode": "bridge",
-    "executionRoleArn": "arn:aws:iam::198862031942:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::547480007890:role/ecsTaskExecutionRole",
     "containerDefinitions": [
         {
-            "name": "ecommerce-container",
+            "name": "jrcmpc-container",
             "portMappings": [
                 {
                   "hostPort": 80,
