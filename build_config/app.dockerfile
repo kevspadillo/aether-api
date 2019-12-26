@@ -19,6 +19,7 @@ WORKDIR /srv/app
 
 RUN docker-php-ext-install mbstring pdo pdo_mysql \ 
     && a2enmod rewrite negotiation \
+    && a2enmod headers \\
     && docker-php-ext-install opcache
     
 # FROM php:7.2-fpm
