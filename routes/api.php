@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 |
 */
 
+Route::get('health-check', 'HealthCheckController@index');
+
 Route::post('register', 'RegisterController@register');
 
 Route::post('login', 'LoginController@login');
